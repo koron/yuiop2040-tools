@@ -11,3 +11,4 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(helloworld)
 add_subdirectory(gpiomon)
+add_subdirectory(spiinit)
