@@ -14,17 +14,31 @@ int main() {
     stdio_init_all();
     printf("\nDuplex Matrix Sim\n");
 
-    for (int i = 12; i <= 15; i++) {
-        gpio_init(i);
-        gpio_set_dir(i, false);
-        gpio_pull_up(i);
-    }
+    gpio_init(12);
+    gpio_set_dir(12, false);
+    gpio_set_pulls(12, true, false);
+    gpio_put(12, true);
+
+    gpio_init(13);
     gpio_set_dir(13, true);
-    gpio_pull_down(13);
+    gpio_set_pulls(13, false, true);
+    gpio_put(13, false);
+
+    gpio_init(14);
+    gpio_set_dir(14, false);
+    gpio_set_pulls(14, true, false);
+    gpio_put(14, true);
+
+    gpio_init(15);
+    gpio_set_dir(15, false);
+    gpio_set_pulls(15, true, false);
+    gpio_put(15, true);
 
     uint32_t n = 0;
     while(true) {
-        printf("%03d GPIO15=%s\n", n++, gpio_get(15) ? "Hi" : "Lo");
+        printf("%03d #14=%s #15=%s\n", n++,
+                gpio_get(14) ? "Hi" : "Lo",
+                gpio_get(15) ? "Hi" : "Lo");
         sleep_ms(1000);
     }
 }
