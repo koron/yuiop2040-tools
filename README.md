@@ -7,3 +7,4 @@ gpimon            | Dump All GPIO status
 spiinit           | SPI initialization
 duplex-matrix-sim | Duplex matrix (keyboard) simulation
 stdio-usb         | Use USB serial as stdio
+stdio-usb2        | stdio-usb + own USB descriptors.
