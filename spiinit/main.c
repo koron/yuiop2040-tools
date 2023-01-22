@@ -10,7 +10,6 @@
 #define SPI_CSN     PICO_DEFAULT_SPI_CSN_PIN
 
 int main() {
-    setup_default_uart();
     stdio_init_all();
     printf("\nspiinit: hello\n");
 

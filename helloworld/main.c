@@ -3,7 +3,7 @@
 #include "pico/stdlib.h"
 
 int main() {
-    setup_default_uart();
+    stdio_init_all();
     printf("\nYUIOP2040: Hello World\n");
     while(true) {
         tight_loop_contents();

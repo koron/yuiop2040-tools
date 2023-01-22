@@ -4,7 +4,7 @@
 #include "hardware/gpio.h"
 
 int main() {
-    setup_default_uart();
+    stdio_init_all();
     printf("\nYUIOP2040: GPIO monitor\n");
 
     for (int i = 1; i < 30; i++) {

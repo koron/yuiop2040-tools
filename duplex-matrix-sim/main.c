@@ -61,7 +61,6 @@ void main2() {
 }
 
 int main() {
-    setup_default_uart();
     stdio_init_all();
     printf("\nDuplex Matrix Sim\n");
 
