@@ -8,3 +8,4 @@ spiinit           | SPI initialization
 duplex-matrix-sim | Duplex matrix (keyboard) simulation
 stdio-usb         | Use USB serial as stdio
 stdio-usb2        | stdio-usb + own USB descriptors.
+fm24cl64b         | FM24CL64B (FRAM) sample driver.
