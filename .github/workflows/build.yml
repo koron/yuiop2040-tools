@@ -37,3 +37,5 @@ jobs:
         name: yuiop2040-tools
         path: |
           build/*/*.uf2
+          build/*/*.dis
+          build/*/*.elf.map
