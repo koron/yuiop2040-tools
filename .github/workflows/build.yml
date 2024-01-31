@@ -2,6 +2,9 @@ name: Build
 
 on: [ push ]
 
+env:
+  PICO_SDK_VERSION: '1.5.1'
+
 jobs:
 
   build:
@@ -12,13 +15,13 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Checkout pico-sdk
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: raspberrypi/pico-sdk
-        ref: '1.4.0'
+        ref: ${{ env.PICO_SDK_VERSION }}
         path: __pico-sdk__
         submodules: true
 
@@ -29,11 +32,8 @@ jobs:
 
     - run: make
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
-        name: built-firmwares
+        name: yuiop2040-tools
         path: |
-          build/**/*.uf2
-          build/**/*.dis
-          build/**/*.elf.map
-          !build/pico-sdk
+          build/*/*.uf2
