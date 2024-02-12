@@ -24,11 +24,20 @@ int fm24cl64b_write(i2c_inst_t *i2c, uint8_t id, uint16_t offset, uint8_t *src, 
     uint8_t addr = 0x50 | (id & 0x07);
     uint8_t off[] = { offset >> 8, offset };
     int ret;
-    ret = i2c_write_blocking(i2c, addr, off, sizeof(off), false);
+    ret = i2c_write_blocking(i2c, addr, off, sizeof(off), true);
     if (ret != sizeof(off)) {
         return ret < 0 ? ret : PICO_ERROR_GENERIC;
     }
-    i2c_write_raw_blocking(i2c, src, len);
+    for (size_t i = 0; i < len; ++i) {
+        bool last = i == len - 1;
+        i2c->hw->data_cmd =
+            bool_to_bit(last) << I2C_IC_DATA_CMD_STOP_LSB |
+            *src++;
+        do {
+            tight_loop_contents();
+        } while (!(i2c->hw->raw_intr_stat & I2C_IC_RAW_INTR_STAT_TX_EMPTY_BITS));
+    }
+    i2c->restart_on_next = false;
     return len;
 }
 
@@ -36,7 +45,7 @@ int fm24cl64b_read(i2c_inst_t *i2c, uint8_t id, uint16_t offset, uint8_t *dst, s
     uint8_t addr = 0x50 | (id & 0x07);
     uint8_t off[] = { offset >> 8, offset };
     int ret;
-    ret = i2c_write_blocking(i2c, addr, off, sizeof(off), false);
+    ret = i2c_write_blocking(i2c, addr, off, sizeof(off), true);
     if (ret != sizeof(off)) {
         return ret < 0 ? ret : PICO_ERROR_GENERIC;
     }
@@ -102,21 +111,28 @@ int main() {
 
     int ret;
 
+
 #if 0
     ret = fram_write256(0);
     printf("fram_write256()=%d\n", ret);
+    printf("=== INIT\n");
+    fm24cl64b_dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
 #endif
 
-#if 0
-    ret = fm24cl64b_fill(i2c_default, 0, 0, 0, 128);
+
+#if 1
+    ret = fm24cl64b_fill(i2c_default, 0, 0x0040, 0, 128);
     printf("fm24cl64b_fill()=%d\n", ret);
+    printf("=== CLEAR\n");
+    fm24cl64b_dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
 #endif
 
+    printf("=== RESULT\n");
     ret = fm24cl64b_dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
     if (ret < 0) {
         printf("fm24cl64b_dump failed: %d\n", ret);
     }
 
-    printf("*** done\n");
+    printf("\n*** done\n");
     return 0;
 }
