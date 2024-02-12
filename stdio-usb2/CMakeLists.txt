@@ -1,6 +1,6 @@
 add_executable(stdio-usb2 main.c usb_descriptors.c)
 
-pico_enable_stdio_uart(stdio-usb2 0) 
+pico_enable_stdio_uart(stdio-usb2 0)
 pico_enable_stdio_usb(stdio-usb2 1)
 
 target_compile_definitions(stdio-usb2 PRIVATE
