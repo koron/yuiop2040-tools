@@ -6,6 +6,8 @@
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 
+#include "fm24cl64b.h"
+
 static int fram_write256(uint16_t off) {
     int ret;
     uint8_t data[256+2] = { off >> 8, off };
@@ -20,60 +22,12 @@ static int fram_write256(uint16_t off) {
     return 0;
 }
 
-int fm24cl64b_write(i2c_inst_t *i2c, uint8_t id, uint16_t offset, uint8_t *src, size_t len) {
-    uint8_t addr = 0x50 | (id & 0x07);
-    uint8_t off[] = { offset >> 8, offset };
-    int ret;
-    ret = i2c_write_blocking(i2c, addr, off, sizeof(off), true);
-    if (ret != sizeof(off)) {
-        return ret < 0 ? ret : PICO_ERROR_GENERIC;
-    }
-    for (size_t i = 0; i < len; ++i) {
-        bool last = i == len - 1;
-        i2c->hw->data_cmd =
-            bool_to_bit(last) << I2C_IC_DATA_CMD_STOP_LSB |
-            *src++;
-        do {
-            tight_loop_contents();
-        } while (!(i2c->hw->raw_intr_stat & I2C_IC_RAW_INTR_STAT_TX_EMPTY_BITS));
-    }
-    i2c->restart_on_next = false;
-    return len;
-}
-
-int fm24cl64b_read(i2c_inst_t *i2c, uint8_t id, uint16_t offset, uint8_t *dst, size_t len) {
-    uint8_t addr = 0x50 | (id & 0x07);
-    uint8_t off[] = { offset >> 8, offset };
-    int ret;
-    ret = i2c_write_blocking(i2c, addr, off, sizeof(off), true);
-    if (ret != sizeof(off)) {
-        return ret < 0 ? ret : PICO_ERROR_GENERIC;
-    }
-    return i2c_read_blocking(i2c, addr, dst, len, false);
-}
-
-int fm24cl64b_fill(i2c_inst_t *i2c, uint8_t id, uint16_t offset, uint8_t c, size_t len) {
-    int ret;
-    uint8_t *src = calloc(len, 1);
-    memset(src, c, len);
-    ret = fm24cl64b_write(i2c, id, offset, src, len);
-    if (ret != len) {
-        printf("fm24cl64b_fill failed: %d\n", ret);
-        goto END;
-    }
-END:
-    if (src != NULL) {
-        free(src);
-    }
-    return ret;
-}
-
-int fm24cl64b_dump(i2c_inst_t *i2c, uint8_t id, uint16_t offset, size_t len) {
+static int dump(i2c_inst_t *i2c, uint8_t id, uint16_t offset, size_t len) {
     int ret = 0;
     uint8_t *dst = calloc(len, 1);
     ret = fm24cl64b_read(i2c, id, offset, dst, len);
     if (ret != len) {
-        printf("fm24cl64b_dump failed: %d\n", ret);
+        printf("dump failed: %d\n", ret);
         goto END;
     }
     ret = 0;
@@ -111,27 +65,23 @@ int main() {
 
     int ret;
 
+    printf("=== START\n");
+    ret = dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
+    if (ret < 0) {
+        printf("dump failed: %d\n", ret);
+    }
 
-#if 0
+#if 1
     ret = fram_write256(0);
-    printf("fram_write256()=%d\n", ret);
     printf("=== INIT\n");
-    fm24cl64b_dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
+    dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
 #endif
-
 
 #if 1
     ret = fm24cl64b_fill(i2c_default, 0, 0x0040, 0, 128);
-    printf("fm24cl64b_fill()=%d\n", ret);
     printf("=== CLEAR\n");
-    fm24cl64b_dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
+    dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
 #endif
-
-    printf("=== RESULT\n");
-    ret = fm24cl64b_dump(i2c_default, 0, 0x1fe0, 32 + 256 + 32);
-    if (ret < 0) {
-        printf("fm24cl64b_dump failed: %d\n", ret);
-    }
 
     printf("\n*** done\n");
     return 0;

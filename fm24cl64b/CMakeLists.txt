@@ -1,4 +1,4 @@
-add_executable(fm24cl64b main.c)
+add_executable(fm24cl64b main.c fm24cl64b.c)
 
 target_link_libraries(fm24cl64b
 	pico_stdlib
