@@ -4,6 +4,8 @@ include(pico_sdk_import.cmake)
 
 project(yuiop2040_tools C CXX ASM)
 
+set(PICO_BOARD pico)
+
 pico_sdk_init()
 
 set(CMAKE_C_STANDARD 11)
@@ -15,3 +17,4 @@ add_subdirectory(spiinit)
 add_subdirectory(duplex-matrix-sim)
 add_subdirectory(stdio-usb)
 add_subdirectory(stdio-usb2)
+add_subdirectory(fm24cl64b)

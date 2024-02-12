@@ -6,14 +6,14 @@
 
 Num |Name  |Description
 ---:|------|-------------
-0   |A0    |Device select address #0
-1   |A1    |Device select address #1
-2   |A2    |Device select address #2
-3   |VSS   |Ground for device
-4   |VDD   |Power supply
-5   |WP    |Write protect when tied to VDD
+1   |A0    |Device select address #0
+2   |A1    |Device select address #1
+3   |A2    |Device select address #2
+4   |VSS   |Ground for device
+5   |SDA   |I2C Serial data/address
 6   |SCL   |I2C Serial clock
-7   |SDA   |I2C Serial data/address
+7   |WP    |Write protect when tied to VDD
+8   |VDD   |Power supply
 
 `A0~A2` are pulled down internally.
 
