@@ -6,15 +6,14 @@ else
 	BUILD_DIR=build/$(PICO_PLATFORM)
 endif
 
-default: $(BUILD_DIR)/Makefile
-	cmake --build $(BUILD_DIR) --parallel 8
-
-$(BUILD_DIR)/Makefile: CMakeLists.txt */CMakeLists.txt
+.PHONY: build
+build:
 	cmake -B $(BUILD_DIR)
+	cmake --build $(BUILD_DIR)
 
 .PHONY: clean
 clean:
-	if [ -f $(BUILD_DIR)/Makefile ] ; then make -C $(BUILD_DIR) clean ; fi
+	rm -rf $(BUILD_DIR)
 
 .PHONY: distclean
 distclean:
