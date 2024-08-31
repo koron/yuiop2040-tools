@@ -1,5 +1,11 @@
 # Examples for Original RP2040 Board
 
+## Pre Requirements
+
+*   raspberrypi/pico-sdk 2.0.0 (or later)
+
+## Sub Projects
+
 Name              | Description
 ------------------|---------------
 helloworld        | Hellow world

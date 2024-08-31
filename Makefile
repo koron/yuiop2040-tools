@@ -1,13 +1,20 @@
-default: build/Makefile
-	make -j8 -C build
+PICO_PLATFORM=rp2040
 
-.PHONY: build/Makefile
-build/Makefile:
-	cmake -B build -DCMAKE_DEPENDS_USE_COMPILER=OFF
+ifeq ($(PICO_PLATFORM),rp2040)
+	BUILD_DIR=build
+else
+	BUILD_DIR=build/$(PICO_PLATFORM)
+endif
+
+default: $(BUILD_DIR)/Makefile
+	cmake --build $(BUILD_DIR) --parallel 8
+
+$(BUILD_DIR)/Makefile: CMakeLists.txt */CMakeLists.txt
+	cmake -B $(BUILD_DIR)
 
 .PHONY: clean
 clean:
-	if [ -f build/Makefile ] ; then make -C build clean ; fi
+	if [ -f $(BUILD_DIR)/Makefile ] ; then make -C $(BUILD_DIR) clean ; fi
 
 .PHONY: distclean
 distclean:
@@ -16,4 +23,4 @@ distclean:
 
 .PHONY: tags
 tags:
-	ctags --exclude=build/ -R .
+	ctags --exclude=build/* --exclude=tmp/* -R .
